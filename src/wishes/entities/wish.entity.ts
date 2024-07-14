@@ -6,7 +6,7 @@ import { Offer } from "src/offers/entities/offer.entity";
 
 @Entity()
 export class Wish extends BaseEntityIdTimestamp {
-  @Column({ default: 'Пока ничего не рассказал о себе'})
+  @Column()
   @IsString()
   @Length(1, 250)
   name: string
