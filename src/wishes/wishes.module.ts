@@ -3,7 +3,7 @@ import { WishesService } from './wishes.service';
 import { WishesController } from './wishes.controller';
 
 @Module({
-  providers: [WishesService],
-  controllers: [WishesController]
+  controllers: [WishesController],
+  providers: [WishesService]
 })
 export class WishesModule {}

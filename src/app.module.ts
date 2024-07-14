@@ -22,7 +22,7 @@ import { OffersModule } from './offers/offers.module';
     UsersModule,
     WishesModule,
     WishlistsModule,
-    OffersModule
+    OffersModule,
   ],
   controllers: [AppController],
   providers: [],

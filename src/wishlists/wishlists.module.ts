@@ -3,7 +3,7 @@ import { WishlistsService } from './wishlists.service';
 import { WishlistsController } from './wishlists.controller';
 
 @Module({
-  providers: [WishlistsService],
-  controllers: [WishlistsController]
+  controllers: [WishlistsController],
+  providers: [WishlistsService]
 })
 export class WishlistsModule {}
