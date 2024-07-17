@@ -10,7 +10,6 @@ export class CreateUserDto extends OmitType(User, [
   'about',
   'avatar',
   'email',
-  'password',
   'wishes',
   'offers',
   'wishlists'
