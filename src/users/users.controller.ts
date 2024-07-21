@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseFilters, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserReq } from 'src/utils/types/types';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { AuthUser } from 'src/utils/decorators/user.decorator';
+import { User } from './entities/user.entity';
+import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { EntityNotFoundFilter } from 'src/filters/exceptions.filter';
 
 @Controller('users')
 export class UsersController {
@@ -13,19 +18,39 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get('me')
-  async getUserMe(@Req() req: IUserReq) {
-    return req.user;
+  async findOwn(@AuthUser() user: User): Promise<User> {
+    return this.usersService.findOne({
+      where: { id: user.id },
+      select: {
+        email: true,
+        username: true,
+        id: true,
+        avatar: true,
+        about: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
+  // @Get('me/wishes')
+  // async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
+  //   const relations = [ 'wishes', 'wishes.owner', 'wishes.offers' ];
+  //   return await this.usersService.findWishes(id, relations);
+  // }
+
   @Patch('me')
-  async updateUserMe(@Body() updateUserDto: UpdateUserDto, @Req() req: IUserReq) {
-    return this.usersService.updateOne({ id: req.user.id }, updateUserDto, req.user.id);
+  @UseFilters(EntityNotFoundFilter)
+  async updateOne(@AuthUser() user: User, @Body() UpdateUserDto: UpdateUserDto) {
+    const { id } = user;
+    return this.usersService.updateOne(UpdateUserDto, id);
   }
 
   @Delete(':id')

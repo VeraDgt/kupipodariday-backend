@@ -23,7 +23,7 @@ import { HashModule } from './hash/hash.module';
       database: 'nest_project',
       entities: [User, Wish, Offer, Wishlist],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true,//!!!не используется в production - для изменения полей базы данных используются миграции
   }),
     UsersModule,
     WishesModule,

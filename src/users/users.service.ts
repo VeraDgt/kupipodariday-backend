@@ -14,7 +14,7 @@ export class UsersService {
     private readonly hashService: HashService,
   ) {}
   
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const newUser = {
       ...createUserDto,
       password: await this.hashService.hash(createUserDto.password)
@@ -26,8 +26,12 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
+  async findById(id: number): Promise<User> {
+    return await this.usersRepository.findOneBy({ id });
+  }
+
   async findOne(query: FindOneOptions<User>) {
-    const user = await this.usersRepository.findOne(query);
+    const user = await this.usersRepository.findOneOrFail(query);
     return user;
   }
 
@@ -47,10 +51,18 @@ export class UsersService {
     })
   }
 
-  async updateOne(query: FindOptionsWhere<User>, updateUserDto: UpdateUserDto, id: number) {
-    const user = await this.findOne({ where: query });
-    return this.usersRepository.update(query, updateUserDto);
+  async findUserById(id: number): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id });
     return user;
+  }
+
+  async updateOne(updateUserDto: UpdateUserDto, id: number) {
+    const { password } = updateUserDto;
+    const user = await this.findById(id);
+    if (password) {
+      updateUserDto.password = await this.hashService.hash(password);
+    }
+    this.usersRepository.update(id, updateUserDto);
   }
 
   async removeOne(query: FindOptionsWhere<User>, id: number) {

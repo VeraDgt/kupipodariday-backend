@@ -1,20 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { WishesService } from './wishes.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { IWishPaginator, WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { AuthUser } from 'src/utils/decorators/user.decorator';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {
+    return this.wishesService.create(createWishDto, user.id);
   }
 
   @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  async findAll(@Query() query: { page: number; limit: number }): Promise<IWishPaginator> {
+    return this.wishesService.findAll(query);
   }
 
   @Get(':id')
