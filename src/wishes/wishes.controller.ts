@@ -13,10 +13,10 @@ export class WishesController {
     return this.wishesService.create(createWishDto, user.id);
   }
 
-  @Get()
-  async findAll(@Query() query: { page: number; limit: number }): Promise<IWishPaginator> {
-    return this.wishesService.findAll(query);
-  }
+  // @Get()
+  // async findAll(@Query() query: { page: number; limit: number }): Promise<IWishPaginator> {
+  //   return this.wishesService.findAll(query);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

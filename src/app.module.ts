@@ -11,26 +11,24 @@ import { Offer } from './offers/entities/offer.entity';
 import { Wishlist } from './wishlists/entities/wishlist.entity';
 import { AuthModule } from './auth/auth.module';
 import { HashModule } from './hash/hash.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
+import { DatabaseConfigFactory } from './config/database-config.factory';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5433,
-      username: 'student',
-      password: 'student',
-      database: 'nest_project',
-      entities: [User, Wish, Offer, Wishlist],
-      autoLoadEntities: true,
-      synchronize: true,//!!!не используется в production - для изменения полей базы данных используются миграции
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: DatabaseConfigFactory,
   }),
     UsersModule,
     WishesModule,
     WishlistsModule,
     OffersModule,
     AuthModule,
-    HashModule,
   ],
   controllers: [AppController],
   providers: [],
