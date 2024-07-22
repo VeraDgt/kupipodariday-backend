@@ -17,7 +17,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const newUser = {
       ...createUserDto,
-      password: await this.hashService.hash(createUserDto.password)
+      password: await this.hashService.hashValue(createUserDto.password)
     }
     return this.usersRepository.save(newUser);
   }
@@ -60,7 +60,7 @@ export class UsersService {
     const { password } = updateUserDto;
     const user = await this.findById(id);
     if (password) {
-      updateUserDto.password = await this.hashService.hash(password);
+      updateUserDto.password = await this.hashService.hashValue(password);
     }
     this.usersRepository.update(id, updateUserDto);
   }

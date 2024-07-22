@@ -18,12 +18,12 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   async findOwn(@AuthUser() user: User): Promise<User> {
     return this.usersService.findOne({

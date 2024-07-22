@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
+import { HashModule } from 'src/hash/hash.module';
 import { HashService } from 'src/hash/hash.service';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
@@ -15,6 +16,7 @@ import { WishesModule } from 'src/wishes/wishes.module';
   imports: [TypeOrmModule.forFeature([User, Wish, Offer, Wishlist]),
   forwardRef(() => AuthModule),
   forwardRef(() => WishesModule),
+  HashModule,
 ],  
   controllers: [UsersController],
   providers: [UsersService, HashService, WishesService],

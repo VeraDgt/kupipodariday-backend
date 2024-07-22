@@ -9,7 +9,7 @@ export class JwtConfigFactory implements JwtOptionsFactory {
     return {
       secret: this.configService.get<string>('jwt.secret'),
       signOptions: {
-        expiresIn: this.configService.get<string>('jwt.tokenTimeLimit'),
+        expiresIn: this.configService.get<string>('jwt.ttl'),
       },
     };
   }

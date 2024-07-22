@@ -11,5 +11,5 @@ export class CreateUserDto extends OmitType(User, [
   'email',
   'wishes',
   'offers',
-  'wishlists'
+  'wishlists',
 ] as const) {}
