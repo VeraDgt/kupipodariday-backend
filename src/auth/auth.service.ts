@@ -21,8 +21,9 @@ export class AuthService {
 
   async signin(user: User) {
     const { username, id: sub } = user;
+    console.log(user);
     return {
-      access_token: await this.jwtService.sign({ username, sub }),
+      access_token: await this.jwtService.signAsync({ username, sub }),
     };
   }
 }
