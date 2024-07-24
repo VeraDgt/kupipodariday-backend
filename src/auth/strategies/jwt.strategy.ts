@@ -12,7 +12,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
   ) {
-    console.log(configService.get<string>('jwt.secret'));
     
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

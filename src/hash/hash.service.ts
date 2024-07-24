@@ -9,18 +9,7 @@ export class HashService {
     return await hash(password, salt);
   }
 
-  compare(password: string, hash: string): Promise<boolean> {
-    return compare(password, hash);
+  async compare(password: string, hash: string): Promise<boolean> {
+    return await compare(password, hash);
   }
-
-  // async getNewUser<T extends { password?: string }>(
-  //   createUserDto: T,
-  // ): Promise<Omit<T, 'password'> & { password: string }> {
-  //   const { password, ...data } = createUserDto;
-  //   const hashValue = await this.hashValue(password);
-  //   return {
-  //     ...data,
-  //     password: hashValue,
-  //   };
-  // }
 }

@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { ConfigModule } from '@nestjs/config';
 import { JwtConfigFactory } from 'src/config/jwt-config.factory';
+import { HashService } from 'src/hash/hash.service';
 
 
 @Module({
@@ -22,7 +23,7 @@ import { JwtConfigFactory } from 'src/config/jwt-config.factory';
       }),
     ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtConfigFactory],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtConfigFactory, HashService],
   exports: [AuthService],
 })
 export class AuthModule {}
