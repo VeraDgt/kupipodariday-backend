@@ -26,6 +26,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async findOwn(@AuthUser() user: User): Promise<User> {
+
     return this.usersService.findOne({
       where: { id: user.id },
       select: {

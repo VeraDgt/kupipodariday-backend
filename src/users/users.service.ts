@@ -62,7 +62,7 @@ export class UsersService {
     if (password) {
       updateUserDto.password = await this.hashService.hashValue(password);
     }
-    this.usersRepository.update(id, updateUserDto);
+    return this.usersRepository.save({ ...user, ...updateUserDto });
   }
 
   async removeOne(query: FindOptionsWhere<User>, id: number) {
