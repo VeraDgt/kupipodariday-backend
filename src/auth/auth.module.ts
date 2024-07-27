@@ -11,19 +11,24 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtConfigFactory } from 'src/config/jwt-config.factory';
 import { HashService } from 'src/hash/hash.service';
 
-
 @Module({
   imports: [
-    forwardRef(() => UsersModule), 
+    forwardRef(() => UsersModule),
     PassportModule,
     HashModule,
     ConfigModule.forRoot(),
     JwtModule.registerAsync({
       useClass: JwtConfigFactory,
-      }),
-    ],
+    }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtConfigFactory, HashService],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    JwtConfigFactory,
+    HashService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

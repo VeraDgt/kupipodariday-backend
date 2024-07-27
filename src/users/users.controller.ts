@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,10 +34,9 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   async findOwn(@AuthUser() user: User): Promise<User> {
-
     return this.usersService.findOne({
       where: { id: user.id },
       select: {
@@ -41,22 +51,42 @@ export class UsersController {
     });
   }
 
-
   @Patch('me')
+  @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
-  async updateOne(@AuthUser() user: User, @Body() UpdateUserDto: UpdateUserDto) {
+  async updateOne(
+    @AuthUser() user: User,
+    @Body() UpdateUserDto: UpdateUserDto,
+  ) {
     const { id } = user;
-    return this.usersService.updateOne(UpdateUserDto, id);
+    return this.usersService.updateOne(id, UpdateUserDto);
   }
 
-    // @Get('me/wishes')
+  // @Get('me/wishes')
   // async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
   //   const relations = [ 'wishes', 'wishes.owner', 'wishes.offers' ];
   //   return await this.usersService.findWishes(id, relations);
   // }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: number, @Req() req: IUserReq) {
     return this.usersService.removeOne({ id }, req.user.id);
+  }
+
+  @Get(':username')
+  @UseGuards(JwtAuthGuard)
+  @UseFilters(EntityNotFoundFilter)
+  async getUserByName(@Param('username') username: string) {
+    return this.usersService.findByName(username);
+  }
+
+  // @Get(':username/wishes')
+
+  @Post('find')
+  @UseGuards(JwtAuthGuard)
+  @UseFilters(EntityNotFoundFilter)
+  findManyUsers(@Body('query') query: string): Promise<User[]> {
+    return this.usersService.findMany(query);
   }
 }

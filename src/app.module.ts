@@ -23,7 +23,7 @@ import { DatabaseConfigFactory } from './config/database-config.factory';
     }),
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfigFactory,
-  }),
+    }),
     UsersModule,
     WishesModule,
     WishlistsModule,

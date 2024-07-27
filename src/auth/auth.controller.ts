@@ -23,4 +23,3 @@ export class AuthController {
     return await this.userService.create(CreateUserDto);
   }
 }
-

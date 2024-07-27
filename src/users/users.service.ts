@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,12 +13,12 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     private readonly hashService: HashService,
   ) {}
-  
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const newUser = {
       ...createUserDto,
-      password: await this.hashService.hashValue(createUserDto.password)
-    }
+      password: await this.hashService.hashValue(createUserDto.password),
+    };
     return this.usersRepository.save(newUser);
   }
 
@@ -47,16 +47,16 @@ export class UsersService {
         email: true,
         about: true,
         avatar: true,
-      }
-    })
+      },
+    });
   }
 
-  async findUserById(id: number): Promise<User> {
-    const user = await this.usersRepository.findOneBy({ id });
-    return user;
-  }
+  // async findUserById(id: number): Promise<User> {
+  //   const user = await this.usersRepository.findOneBy({ id });
+  //   return user;
+  // }
 
-  async updateOne(updateUserDto: UpdateUserDto, id: number) {
+  async updateOne(id: number, updateUserDto: UpdateUserDto) {
     const { password } = updateUserDto;
     const user = await this.findById(id);
     if (password) {
@@ -67,6 +67,27 @@ export class UsersService {
 
   async removeOne(query: FindOptionsWhere<User>, id: number) {
     const user = await this.findOne({ where: query });
+    console.log(user);
+    if (id !== user.id) {
+      return null;
+    }
     return this.usersRepository.delete(query);
+  }
+
+  async findByName(username: string): Promise<User> {
+    const user = await this.findOne({
+      where: {
+        username: username,
+      },
+    });
+    if (!user) return null;
+    return user;
+  }
+
+  async findMany(query: string): Promise<User[]> {
+    const users = await this.usersRepository.find({
+      where: [{ email: query }, { username: query }],
+    });
+    return users;
   }
 }

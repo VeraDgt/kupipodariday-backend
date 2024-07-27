@@ -13,11 +13,12 @@ import { AuthModule } from 'src/auth/auth.module';
 import { WishesModule } from 'src/wishes/wishes.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Wish, Offer, Wishlist]),
-  forwardRef(() => AuthModule),
-  forwardRef(() => WishesModule),
-  HashModule,
-],  
+  imports: [
+    TypeOrmModule.forFeature([User, Wish, Offer, Wishlist]),
+    forwardRef(() => AuthModule),
+    forwardRef(() => WishesModule),
+    HashModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService, HashService, WishesService],
   exports: [UsersService],

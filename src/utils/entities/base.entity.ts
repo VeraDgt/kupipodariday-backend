@@ -1,15 +1,17 @@
-import { BaseEntity, 
+import {
+  BaseEntity,
   CreateDateColumn,
   PrimaryGeneratedColumn,
-  UpdateDateColumn } from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 
-  export abstract class BaseEntityIdTimestamp extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number
+export abstract class BaseEntityIdTimestamp extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @CreateDateColumn()
-      createdAt: Date
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-      updatedAt: Date
-  }
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

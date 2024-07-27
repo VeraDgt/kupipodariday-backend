@@ -1,8 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from "@nestjs/typeorm";
-import { join } from "path";
-
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import { join } from 'path';
 
 @Injectable()
 export class DatabaseConfigFactory implements TypeOrmOptionsFactory {
@@ -16,7 +15,7 @@ export class DatabaseConfigFactory implements TypeOrmOptionsFactory {
       password: this.configService.get<string>('database.password'),
       database: this.configService.get<string>('database.databaseName'),
       entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
-      synchronize: true,//!!!не используется в production - для изменения полей базы данных используются миграции
+      synchronize: true, //!!!не используется в production - для изменения полей базы данных используются миграции
     };
   }
 }

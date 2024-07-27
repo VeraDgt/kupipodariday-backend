@@ -1,30 +1,29 @@
-import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm";
-import { BaseEntityIdTimestamp } from "src/utils/entities/base.entity";
-import { User } from "src/users/entities/user.entity";
-import { IsString, Length, IsUrl } from "class-validator";
-import { Wish } from "src/wishes/entities/wish.entity";
-
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { BaseEntityIdTimestamp } from 'src/utils/entities/base.entity';
+import { User } from 'src/users/entities/user.entity';
+import { IsString, Length, IsUrl } from 'class-validator';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()
 export class Wishlist extends BaseEntityIdTimestamp {
   @Column()
   @IsString()
   @Length(1, 250)
-  name: string
+  name: string;
 
   @Column()
   @IsString()
   @Length(1, 1500)
-  description: string
+  description: string;
 
   @Column()
   @IsUrl()
-  image: string
+  image: string;
 
   @ManyToOne(() => User, (owner) => owner.wishlists)
-  owner: User
+  owner: User;
 
   @ManyToMany(() => Wish)
   @JoinTable()
-  items: Wish[]
+  items: Wish[];
 }
