@@ -41,11 +41,6 @@ export class UsersController {
     });
   }
 
-  // @Get('me/wishes')
-  // async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
-  //   const relations = [ 'wishes', 'wishes.owner', 'wishes.offers' ];
-  //   return await this.usersService.findWishes(id, relations);
-  // }
 
   @Patch('me')
   @UseFilters(EntityNotFoundFilter)
@@ -53,6 +48,12 @@ export class UsersController {
     const { id } = user;
     return this.usersService.updateOne(UpdateUserDto, id);
   }
+
+    // @Get('me/wishes')
+  // async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
+  //   const relations = [ 'wishes', 'wishes.owner', 'wishes.offers' ];
+  //   return await this.usersService.findWishes(id, relations);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: number, @Req() req: IUserReq) {
