@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository, FindOneOptions, FindOptionsWhere } from 'typeorm';
 import { HashService } from 'src/hash/hash.service';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
 export class UsersService {
@@ -51,11 +52,6 @@ export class UsersService {
     });
   }
 
-  // async findUserById(id: number): Promise<User> {
-  //   const user = await this.usersRepository.findOneBy({ id });
-  //   return user;
-  // }
-
   async updateOne(id: number, updateUserDto: UpdateUserDto) {
     const { password } = updateUserDto;
     const user = await this.findById(id);
@@ -89,5 +85,14 @@ export class UsersService {
       where: [{ email: query }, { username: query }],
     });
     return users;
+  }
+
+  async findOwnWishes(id: number): Promise<Array<Wish>> {
+    const options:FindOneOptions<User> = {
+      where: { id },
+      relations: ['wishes', 'offers'],
+    }
+    const { wishes } = await this.usersRepository.findOne(options);
+    return wishes
   }
 }

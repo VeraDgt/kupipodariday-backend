@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 const WISH_LIMIT = 20;
 
@@ -45,8 +46,37 @@ export class WishesService {
     const totalPage = Math.ceil(totalCount / query.limit);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wish`;
+  findOne(query: FindOneOptions<Wish>) {
+    return this.wishesRepository.findOneOrFail(query);
+  }
+
+  async findMany(query: FindManyOptions<Wish>) {
+    const wishes = await this.wishesRepository.find(query);
+    return wishes;
+  }
+
+
+  async findLastWishes(): Promise<Wish[]> {
+    return this.findMany({
+      relations: ['owner', 'offers'],
+      order: { createdAt: 'DESC'},
+      take: 40,
+    });
+  }
+
+  async findTopWishes(): Promise<Wish[]> {
+    return this.findMany({
+      relations: ['owner', 'offers'],
+      order: { copied: 'DESC'},
+      take: 20,
+    });
+  }
+
+  async findWishById(id: number) {
+    return await this.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    })
   }
 
   async findWishesByOwnerId(ownerId: number) {
@@ -56,11 +86,56 @@ export class WishesService {
     });
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    return `This action updates a #${id} wish`;
+  async update(query: FindOptionsWhere<Wish>, updateWishDto: UpdateWishDto, ownerId: number, ) {
+    const wish = await this.findOne({
+      where: query,
+      relations: ['owner', 'offers'],
+    });
+    if (wish.offers.length > 0 || wish.raised > 0) {
+      throw new BadRequestException('На исполнении, изменить не получится');
+    }
+    return this.wishesRepository.update(query, updateWishDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wish`;
+  async remove(query: FindOptionsWhere<Wish>, user: User) {
+    const wish = await this.findOne({
+      where: query,
+      relations: ['owner']
+    });
+    if (wish.owner.id !== user.id) {
+      throw new BadRequestException('Действие запрещено');
+    }
+    return this.wishesRepository.delete(query);
+  }
+
+  async copy(query: FindOptionsWhere<Wish>, user: User) {
+    const wish = await this.findOne({
+      where: query,
+      relations: ['owner'],
+    });
+
+    const { name, link, image, price, description } = wish;
+    const userWishes = await this.usersService.findOwnWishes(user.id);
+    if (userWishes.find(
+      (wish) =>
+        wish.name === name &&
+        wish.link === link &&
+        wish.image === image &&
+        wish.price === price &&
+        wish.description === description,
+    )) {
+      throw new BadRequestException('Повторная попытка копирования');
+    }
+    const baseWish = { ...wish, copied: wish.copied + 1 };
+    const newWish = await this.create({
+      name,
+      link,
+      image,
+      price,
+      description,
+    }, user.id,)
+
+    await this.wishesRepository.update(query, baseWish);
+    return newWish;
   }
 }

@@ -62,11 +62,11 @@ export class UsersController {
     return this.usersService.updateOne(id, UpdateUserDto);
   }
 
-  // @Get('me/wishes')
-  // async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
-  //   const relations = [ 'wishes', 'wishes.owner', 'wishes.offers' ];
-  //   return await this.usersService.findWishes(id, relations);
-  // }
+  @Get('me/wishes')
+  @UseGuards(JwtAuthGuard)
+  async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
+    return await this.usersService.findOwnWishes(Number(user.id));
+  }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
