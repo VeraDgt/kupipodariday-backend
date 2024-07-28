@@ -27,25 +27,30 @@ export class WishlistsController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.wishlistsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: number) {
+    return this.wishlistsService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
+    @AuthUser() user: User, 
   ) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.update( id , updateWishlistDto, user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id') id: number, @AuthUser() user: User) {
+    return this.wishlistsService.remove(id, user.id);
   }
 }

@@ -7,7 +7,7 @@ import { FindManyOptions, FindOneOptions, FindOptionsOrder, FindOptionsWhere, Re
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 
-const WISH_LIMIT = 20;
+const ITEMS_LIMIT = 20;
 
 export interface IWishPaginator {
   data: Wish[];

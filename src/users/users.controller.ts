@@ -6,14 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IUserReq } from 'src/utils/types/types';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { User } from './entities/user.entity';
@@ -70,8 +68,8 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: number, @Req() req: IUserReq) {
-    return this.usersService.removeOne({ id }, req.user.id);
+  remove(@Param('id') id: number, @AuthUser() user: User) {
+    return this.usersService.removeOne({ id }, user.id);
   }
 
   @Get(':username')

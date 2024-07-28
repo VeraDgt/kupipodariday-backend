@@ -6,19 +6,16 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
-  Query,
   UseGuards,
   UseFilters
 } from '@nestjs/common';
-import { IWishPaginator, WishesService } from './wishes.service';
+import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from './entities/wish.entity';
-import { IUserReq } from 'src/utils/types/types';
 import { EntityNotFoundFilter } from 'src/filters/exceptions.filter';
 
 @Controller('wishes')
@@ -57,21 +54,21 @@ export class WishesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
-  update(@Param('id') id: number, @Body() updateWishDto: UpdateWishDto, @Req() req: IUserReq) {
-    return this.wishesService.update({ id }, updateWishDto, req.user.id);
+  update(@Param('id') id: number, @Body() updateWishDto: UpdateWishDto, @AuthUser() user: User) {
+    return this.wishesService.update({ id }, updateWishDto, user.id);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
-  remove(@Param('id') id: number, @Req() req: IUserReq) {
-    return this.wishesService.remove({ id }, req.user);
+  remove(@Param('id') id: number, @AuthUser() user: User) {
+    return this.wishesService.remove({ id }, user);
   }
 
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
-  copyWish(@Param('id') id: number, @Req() req: IUserReq) {
-    return this.wishesService.copy({ id }, req.user);
+  copyWish(@Param('id') id: number, @AuthUser() user: User) {
+    return this.wishesService.copy({ id }, user);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,7 +6,6 @@ import { Wishlist } from './entities/wishlist.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { Repository, In } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
 export class WishlistsService {
@@ -29,18 +28,41 @@ export class WishlistsService {
   }
 
   findAll() {
-    return `This action returns all wishlists`;
+    return this.wishlistRepository.find({
+      relations: ['owner', 'items'],
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
+    return this.wishlistRepository.findOne({
+      where: { id },
+      relations: ['owner', 'items'],
+    });
   }
 
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return `This action updates a #${id} wishlist`;
+  async update(wishlistId: number, updateWishlistDto: UpdateWishlistDto, userId: number) {
+    const wishlist = await this.findOne(wishlistId);
+    if (userId !== wishlist.owner.id) {
+      throw new BadRequestException('Доступ запрещен');
+    }
+    if (updateWishlistDto.itemsId) {
+      const wishes = await this.wishesService.findMany({
+        where: { id: In(updateWishlistDto.itemsId)},
+      })
+      wishlist.items.push(...wishes);
+      await this.wishlistRepository.save(wishlist);
+      await this.wishlistRepository.update(wishlistId, updateWishlistDto);
+    } else {
+      await this.wishlistRepository.update(wishlistId, updateWishlistDto);
+    }
+    return wishlist;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+  async remove(id: number, userId: number) {
+    const wishlist = await this.findOne(id);
+    if (userId !== wishlist.owner.id) {
+      throw new BadRequestException('Элемент не найден');
+    }
+    return await this.wishlistRepository.delete(id);
   }
 }
