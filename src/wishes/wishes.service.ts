@@ -113,7 +113,6 @@ export class WishesService {
       where: query,
       relations: ['owner'],
     });
-
     const { name, link, image, price, description } = wish;
     const userWishes = await this.usersService.findOwnWishes(user.id);
     if (userWishes.find(
