@@ -12,7 +12,7 @@ import { OffersModule } from 'src/offers/offers.module';
   imports: [TypeOrmModule.forFeature([Wish]), 
   forwardRef(() => UsersModule),
   AuthModule,
-  OffersModule],
+  forwardRef(() => OffersModule)],
   controllers: [WishesController],
   providers: [WishesService],
   exports: [WishesService],

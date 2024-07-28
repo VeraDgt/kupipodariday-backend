@@ -137,4 +137,8 @@ export class WishesService {
     await this.wishesRepository.update(query, baseWish);
     return newWish;
   }
+
+  async raise(id: number, amount: number) {
+    return this.wishesRepository.update({ id }, { raised: amount });
+  }
 }
