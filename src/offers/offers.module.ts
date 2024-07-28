@@ -6,8 +6,7 @@ import { Offer } from './entities/offer.entity';
 import { WishesModule } from 'src/wishes/wishes.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Offer]),
-  forwardRef(() => WishesModule)],
+  imports: [TypeOrmModule.forFeature([Offer]), forwardRef(() => WishesModule)],
   controllers: [OffersController],
   providers: [OffersService],
 })

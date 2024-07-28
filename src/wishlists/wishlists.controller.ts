@@ -22,7 +22,10 @@ export class WishlistsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@AuthUser() user: User, @Body() createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
+  create(
+    @AuthUser() user: User,
+    @Body() createWishlistDto: CreateWishlistDto,
+  ): Promise<Wishlist> {
     return this.wishlistsService.create(user, createWishlistDto);
   }
 
@@ -43,9 +46,9 @@ export class WishlistsController {
   update(
     @Param('id') id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
-    @AuthUser() user: User, 
+    @AuthUser() user: User,
   ) {
-    return this.wishlistsService.update( id , updateWishlistDto, user.id);
+    return this.wishlistsService.update(id, updateWishlistDto, user.id);
   }
 
   @Delete(':id')

@@ -3,11 +3,14 @@ import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
-import { FindManyOptions, FindOneOptions, FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
-
-const ITEMS_LIMIT = 20;
 
 export interface IWishPaginator {
   data: Wish[];
@@ -34,18 +37,6 @@ export class WishesService {
     return this.wishesRepository.save(wish);
   }
 
-  async findAll(query: {
-    page: number;
-    limit: number;
-  }) /*: Promise<IWishPaginator>*/ {
-    const skip = (query.page - 1) * query.limit;
-    const [data, totalCount] = await this.wishesRepository.findAndCount({
-      take: query.limit,
-      skip,
-    });
-    const totalPage = Math.ceil(totalCount / query.limit);
-  }
-
   findOne(query: FindOneOptions<Wish>) {
     return this.wishesRepository.findOneOrFail(query);
   }
@@ -55,11 +46,10 @@ export class WishesService {
     return wishes;
   }
 
-
   async findLastWishes(): Promise<Wish[]> {
     return this.findMany({
       relations: ['owner', 'offers'],
-      order: { createdAt: 'DESC'},
+      order: { createdAt: 'DESC' },
       take: 40,
     });
   }
@@ -67,7 +57,7 @@ export class WishesService {
   async findTopWishes(): Promise<Wish[]> {
     return this.findMany({
       relations: ['owner', 'offers'],
-      order: { copied: 'DESC'},
+      order: { copied: 'DESC' },
       take: 20,
     });
   }
@@ -76,7 +66,7 @@ export class WishesService {
     return await this.findOne({
       where: { id },
       relations: ['owner', 'offers'],
-    })
+    });
   }
 
   async findWishesByOwnerId(ownerId: number) {
@@ -86,7 +76,11 @@ export class WishesService {
     });
   }
 
-  async update(query: FindOptionsWhere<Wish>, updateWishDto: UpdateWishDto, ownerId: number, ) {
+  async update(
+    query: FindOptionsWhere<Wish>,
+    updateWishDto: UpdateWishDto,
+    ownerId: number,
+  ) {
     const wish = await this.findOne({
       where: query,
       relations: ['owner', 'offers'],
@@ -94,13 +88,16 @@ export class WishesService {
     if (wish.offers.length > 0 || wish.raised > 0) {
       throw new BadRequestException('На исполнении, изменить не получится');
     }
+    if (ownerId !== wish.owner.id) {
+      throw new BadRequestException('Доступ запрещен');
+    }
     return this.wishesRepository.update(query, updateWishDto);
   }
 
   async remove(query: FindOptionsWhere<Wish>, user: User) {
     const wish = await this.findOne({
       where: query,
-      relations: ['owner']
+      relations: ['owner'],
     });
     if (wish.owner.id !== user.id) {
       throw new BadRequestException('Действие запрещено');
@@ -115,24 +112,29 @@ export class WishesService {
     });
     const { name, link, image, price, description } = wish;
     const userWishes = await this.usersService.findOwnWishes(user.id);
-    if (userWishes.find(
-      (wish) =>
-        wish.name === name &&
-        wish.link === link &&
-        wish.image === image &&
-        wish.price === price &&
-        wish.description === description,
-    )) {
+    if (
+      userWishes.find(
+        (wish) =>
+          wish.name === name &&
+          wish.link === link &&
+          wish.image === image &&
+          wish.price === price &&
+          wish.description === description,
+      )
+    ) {
       throw new BadRequestException('Повторная попытка копирования');
     }
     const baseWish = { ...wish, copied: wish.copied + 1 };
-    const newWish = await this.create({
-      name,
-      link,
-      image,
-      price,
-      description,
-    }, user.id,)
+    const newWish = await this.create(
+      {
+        name,
+        link,
+        image,
+        price,
+        description,
+      },
+      user.id,
+    );
 
     await this.wishesRepository.update(query, baseWish);
     return newWish;

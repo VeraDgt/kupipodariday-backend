@@ -15,9 +15,12 @@ export class WishlistsService {
     private readonly wishesService: WishesService,
   ) {}
 
-  async create(owner: User, createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
+  async create(
+    owner: User,
+    createWishlistDto: CreateWishlistDto,
+  ): Promise<Wishlist> {
     const wishes = await this.wishesService.findMany({
-      where: { id: In(createWishlistDto.itemsId)},
+      where: { id: In(createWishlistDto.itemsId) },
     });
 
     return this.wishlistRepository.save({
@@ -40,15 +43,19 @@ export class WishlistsService {
     });
   }
 
-  async update(wishlistId: number, updateWishlistDto: UpdateWishlistDto, userId: number) {
+  async update(
+    wishlistId: number,
+    updateWishlistDto: UpdateWishlistDto,
+    userId: number,
+  ) {
     const wishlist = await this.findOne(wishlistId);
     if (userId !== wishlist.owner.id) {
       throw new BadRequestException('Доступ запрещен');
     }
     if (updateWishlistDto.itemsId) {
       const wishes = await this.wishesService.findMany({
-        where: { id: In(updateWishlistDto.itemsId)},
-      })
+        where: { id: In(updateWishlistDto.itemsId) },
+      });
       wishlist.items.push(...wishes);
       await this.wishlistRepository.save(wishlist);
       await this.wishlistRepository.update(wishlistId, updateWishlistDto);

@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { WishesService } from 'src/wishes/wishes.service';
@@ -20,10 +19,12 @@ export class OffersService {
     const wish = await this.wishesService.findWishById(itemId);
     if (user.id !== wish.owner.id) {
       throw new ForbiddenException('Доступ запрещен');
-    } 
-    if (amount > wish.price ||
-      amount > Number(wish.price) - Number(wish.raised) || 
-      wish.price === wish.raised) {
+    }
+    if (
+      amount > wish.price ||
+      amount > Number(wish.price) - Number(wish.raised) ||
+      wish.price === wish.raised
+    ) {
       throw new ForbiddenException('Сумма превышает требуемую');
     }
     await this.wishesService.raise(
@@ -40,7 +41,7 @@ export class OffersService {
 
   findAll() {
     return this.offersRepository.find({
-      relations: ['item','user'],
+      relations: ['item', 'user'],
     });
   }
 

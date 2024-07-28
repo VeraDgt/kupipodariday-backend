@@ -23,7 +23,7 @@ export class Wish extends BaseEntityIdTimestamp {
   @IsNumber({ maxDecimalPlaces: 2 })
   price: number;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   @IsNumber({ maxDecimalPlaces: 2 })
   raised: number;
 
@@ -38,7 +38,7 @@ export class Wish extends BaseEntityIdTimestamp {
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   @IsInt()
   copied: number;
 }

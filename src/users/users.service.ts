@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -88,11 +88,11 @@ export class UsersService {
   }
 
   async findOwnWishes(id: number): Promise<Array<Wish>> {
-    const options:FindOneOptions<User> = {
+    const options: FindOneOptions<User> = {
       where: { id },
       relations: ['wishes', 'offers'],
-    }
+    };
     const { wishes } = await this.usersRepository.findOne(options);
-    return wishes
+    return wishes;
   }
 }

@@ -54,10 +54,10 @@ export class UsersController {
   @UseFilters(EntityNotFoundFilter)
   async updateOne(
     @AuthUser() user: User,
-    @Body() UpdateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
     const { id } = user;
-    return this.usersService.updateOne(id, UpdateUserDto);
+    return this.usersService.updateOne(id, updateUserDto);
   }
 
   @Get('me/wishes')

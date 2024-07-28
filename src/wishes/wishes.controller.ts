@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
-  UseFilters
+  UseFilters,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -32,12 +32,6 @@ export class WishesController {
     return this.wishesService.findTopWishes();
   }
 
-  // @Get()
-  // async findAll(@Query() query: { page: number; limit: number }): Promise<IWishPaginator> {
-  //   return this.wishesService.findAll(query);
-  // }
-
-  
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {
@@ -54,7 +48,11 @@ export class WishesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
-  update(@Param('id') id: number, @Body() updateWishDto: UpdateWishDto, @AuthUser() user: User) {
+  update(
+    @Param('id') id: number,
+    @Body() updateWishDto: UpdateWishDto,
+    @AuthUser() user: User,
+  ) {
     return this.wishesService.update({ id }, updateWishDto, user.id);
   }
 

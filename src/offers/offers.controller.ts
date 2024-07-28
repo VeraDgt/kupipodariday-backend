@@ -3,15 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   UseFilters,
 } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { EntityNotFoundFilter } from 'src/filters/exceptions.filter';
@@ -39,6 +36,6 @@ export class OffersController {
   @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
   async findOne(@Param('id') id: number) {
-    return this.offersService.findOne({ where: { id }});
+    return this.offersService.findOne({ where: { id } });
   }
 }
