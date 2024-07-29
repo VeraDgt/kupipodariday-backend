@@ -32,6 +32,13 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Post('find')
+  @UseGuards(JwtAuthGuard)
+  @UseFilters(EntityNotFoundFilter)
+  findManyUsers(@Body('query') query: string): Promise<User[]> {
+    return this.usersService.findMany(query);
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async findOwn(@AuthUser() user: User): Promise<User> {
@@ -80,12 +87,11 @@ export class UsersController {
     return this.usersService.findByName(username);
   }
 
-  // @Get(':username/wishes')
-
-  @Post('find')
+  @Get(':username/wishes')
   @UseGuards(JwtAuthGuard)
   @UseFilters(EntityNotFoundFilter)
-  findManyUsers(@Body('query') query: string): Promise<User[]> {
-    return this.usersService.findMany(query);
+  async getUsersWishes(@Param('username') username: string): Promise<Wish[]> {
+    return this.usersService.findUsersWishses(username);
   }
+
 }

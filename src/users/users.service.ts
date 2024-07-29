@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository, FindOneOptions, FindOptionsWhere } from 'typeorm';
+import { Repository, FindOneOptions, FindOptionsWhere, QueryFailedError } from 'typeorm';
 import { HashService } from 'src/hash/hash.service';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
@@ -20,7 +20,14 @@ export class UsersService {
       ...createUserDto,
       password: await this.hashService.hashValue(createUserDto.password),
     };
-    return this.usersRepository.save(newUser);
+
+    try {
+      return this.usersRepository.save(newUser);
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        throw new BadRequestException('Такой пользователь уже зарегистрирован')
+      }
+    }
   }
 
   async findAll() {
@@ -58,7 +65,13 @@ export class UsersService {
     if (password) {
       updateUserDto.password = await this.hashService.hashValue(password);
     }
+    try {
     return this.usersRepository.save({ ...user, ...updateUserDto });
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        throw new BadRequestException('Такой пользователь уже зарегистрирован')
+      }
+    }
   }
 
   async removeOne(query: FindOptionsWhere<User>, id: number) {
@@ -94,5 +107,12 @@ export class UsersService {
     };
     const { wishes } = await this.usersRepository.findOne(options);
     return wishes;
+  }
+
+  async findUsersWishses(username: string): Promise<Wish[]> {
+    const user = await this.findByName(username);
+    if (user) {
+      return user.wishes;
+    }
   }
 }
